@@ -1,6 +1,7 @@
 # Running the project
 
-To run the project, download a local copy and run <b>"npm start"</b>
+To run the project, download a local copy and run <b>"npm start"</b>. A mongod instance will need to be run before the 
+application will launch successfully. If easier I can provide an Ngrok URL to test the API. 
 
 # Tests
 
