@@ -1,8 +1,10 @@
-#Running the project
+# Running the project
 
 To run the project, download a local copy and run <b>"npm start"</b>
 
-To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>
+# Tests
+
+To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>. There are 90 something API tests I could take the validation further if its required. 
 
 # CustomersTest 
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
