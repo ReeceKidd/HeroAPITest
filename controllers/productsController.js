@@ -62,24 +62,20 @@ productsController.registerProduct = (req, res) => {
      }
 
     //Try and catch is needed for products with duplicate SKU codes.  
-    try {
         const saveProduct = new Product(req.body)
         saveProduct.save(function (err) {
 
             if (err) {
-                return res.status(500).json({
-                    message: err,
-                    error: 'Server faillure'
+                return res.status(500).send({
+                    error: 'Duplicate product',
+                    message: 'Product with SKU code: ' + req.body.skuCode + ' already exsits.'
                 })
             } else {
-                return res.status(200).json({
+                return res.status(200).send({
                     message: 'Successfully registered product: ' + req.body.name
                 })
             }
         });
-    } catch (exception) {
-        //Catches duplicate sku code. 
-    }
 }
 
 /*

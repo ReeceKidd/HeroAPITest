@@ -74,38 +74,38 @@ Merchant.remove({}, function (err) {
 
 //Creates other database items needed to test the event controller. 
 before(() => {
-    //Creates denim jacket product needed for test. 
-    describe('Creates denim-jacket product', () => {
-        it('Denim jacket product should be created as request is valid', (done) => {
-            chai.request(server)
-                .post('/register-product')
-                .send({
-                    skuCode: "1234567AB",
-                    name: "denim-jacket",
-                    price: 50.00
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+   //Creates denim jacket product needed for test. 
+   describe('Creates denim-jacket product', () => {
+    it('Denim  product should be created as request is valid', (done) => {
+        chai.request(server)
+            .post('/register-product')
+            .send({
+                skuCode: "1234567AC",
+                name: "denim-jacket",
+                price: 50.00
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-    //Creates tie product needed for test. 
-    describe('Creates tie product', () => {
-        it('Tie product should be created as request is valid', (done) => {
-            chai.request(server)
-                .post('/register-product')
-                .send({
-                    skuCode: "12345NHAB",
-                    name: "blue-tie",
-                    price: 5.00
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+})
+//Creates tie product needed for test. 
+describe('Creates tie product', () => {
+    it('Tie product should be created as request is valid', (done) => {
+        chai.request(server)
+            .post('/register-product')
+            .send({
+                skuCode: "12345NHAB",
+                name: "blue-tie",
+                price: 5.00
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
+})
     //Creates merchant for test. 
     describe('Creates valid merchant', () => {
         it('Merchant should be registered as request is valid', (done) => {
@@ -538,5 +538,5 @@ describe('Tests that merchant is a string', () => {
 
 
 after(async () => {
-    require('../src/app.js').stop();
+    //require('../src/app.js').stop();
 });

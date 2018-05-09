@@ -67,8 +67,6 @@ merchantController.registerMerchant = (req, res) => {
         })
     }
 
-    //Try and catch is needed for merchants with duplicate merchantID's.  
-    try {
         const saveMerchant = new Merchant(req.body)
         saveMerchant.save(function (err) {
             if (err) {
@@ -82,9 +80,6 @@ merchantController.registerMerchant = (req, res) => {
                 })
             }
         });
-    } catch (exception) {
-        //Catches duplicate merchant ID. 
-    }
 }
 
 

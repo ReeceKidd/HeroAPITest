@@ -78,24 +78,27 @@ eventsController.createEvent = (req, res) => {
         let skuCode = req.body.lineItems[x].skuCode
 
         //Checks to see if skuCode exists in database. 
-        Product.find({ skuCode: req.body.lineItems[x].skuCode }, function(err, product) {
-            if(err){
-                res.render('error', { errorMsg: "Error blah blah" } )
-            } else {
-                if (product.length === 0) {
-                    res.status(600).send({
-                        error: 'No product exists',
-                        message: 'No product exists with skuCode: ' + skuCode
-                    })
-                    productFound = false
-                } 
+        Product.find({
+            skuCode: req.body.lineItems[x].skuCode
+        }, function (err, product) {
+            if (err) {
+                res.status(500).send({
+                    error: 'Server error',
+                    message: err
+                })
+            }
+            if (product.length === 0) {
+                productFound = false
             }
         });
 
     } //End of for loop. 
 
-    if(!productFound){
-        return
+    if (productFound === false) {
+        return res.status(600).send({
+            error: 'No product exists',
+            message: 'No product exists with skuCode: ' + skuCode
+        })
     }
 
     if (typeof req.body.merchant !== "string") {
@@ -112,8 +115,6 @@ eventsController.createEvent = (req, res) => {
         })
     }
 
-    //TODO: Would like to add database checks for merchant, user and product to ensure they are valid. 
-
     /*
     For the purposes of this assignment transaction is only shown, 
     however refunds would also need to be supported in a live demo. 
@@ -124,6 +125,12 @@ eventsController.createEvent = (req, res) => {
             message: 'API currently only supports transactions.'
         })
     }
+
+    /*
+    Further validation would be to check if the user and merchant
+    existed in the database similarily to how the skuCOde was used to 
+    check for valid products. 
+    */
 
     var eventValidationError = eventValidation(req)
     if (eventValidationError) {
@@ -146,10 +153,6 @@ eventsController.createEvent = (req, res) => {
             })
         }
     });
-
-
-
-
 }
 
 module.exports = eventsController

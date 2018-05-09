@@ -51,7 +51,6 @@ userController.registerUser = (req, res) => {
         })
     }
     //Try and catch is needed for duplicate emails. 
-    try {
         const saveUser = new User(req.body)
         saveUser.save(function (err) {
 
@@ -66,10 +65,6 @@ userController.registerUser = (req, res) => {
                 })
             }
         });
-    } catch (exception) {
-        //Catches duplicate email entry. 
-    }
-
 }
 
 /*
