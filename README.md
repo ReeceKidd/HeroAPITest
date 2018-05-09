@@ -40,6 +40,7 @@ routes.post('/register-product', productsController.registerProduct)<br>
 
 Additional product routes could be to find the merchants details associated with project. 
 <br>
+
 <b>User routes</b>
 routes.get('/users', userController.getUsers)<br>
 routes.get('/users/:userID', userController.getSpecificUser)<br>

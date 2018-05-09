@@ -5,6 +5,8 @@ uploadProduct,
 getSpecificProduct,
 getAllProducts
 */
+
+const axios = require('axios')
 const Product = require('../models/products')
 
 // Request validators
@@ -24,58 +26,58 @@ productsController.registerProduct = (req, res) => {
         })
     }
 
-    if(typeof req.body.skuCode !== "string") {
+    if (typeof req.body.skuCode !== "string") {
         return res.status(600).send({
             error: 'Type failure',
             message: 'SKU code must be a string'
         })
     }
 
-    if(typeof req.body.price !== "number") {
+    if (typeof req.body.price !== "number") {
         return res.status(600).send({
             error: 'Type failure',
             message: 'Price must be a number'
         })
     }
 
-    if(req.body.price < 0){
+    if (req.body.price < 0) {
         return res.status(600).send({
             error: 'Input error',
             message: 'Price cannot be a negative number'
         })
     }
 
-    if(typeof req.body.name !== "string") {
+    if (typeof req.body.name !== "string") {
         return res.status(600).send({
             error: 'Type failure',
             message: 'Name must be a string'
         })
     }
 
-     //Validation for basic registration. 
-     var productValidationErrors = productsValidation(req)
-     if (productValidationErrors) {
-         return res.status(600).json({
-             message: productValidationErrors,
-             error: 'Validation failure'
-         })
-     }
+    //Validation for basic registration. 
+    var productValidationErrors = productsValidation(req)
+    if (productValidationErrors) {
+        return res.status(600).json({
+            message: productValidationErrors,
+            error: 'Validation failure'
+        })
+    }
 
     //Try and catch is needed for products with duplicate SKU codes.  
-        const saveProduct = new Product(req.body)
-        saveProduct.save(function (err) {
+    const saveProduct = new Product(req.body)
+    saveProduct.save(function (err) {
 
-            if (err) {
-                return res.status(500).send({
-                    error: 'Duplicate product',
-                    message: 'Product with SKU code: ' + req.body.skuCode + ' already exsits.'
-                })
-            } else {
-                return res.status(200).send({
-                    message: 'Successfully registered product: ' + req.body.name
-                })
-            }
-        });
+        if (err) {
+            return res.status(500).send({
+                error: 'Duplicate product',
+                message: 'Product with SKU code: ' + req.body.skuCode + ' already exsits.'
+            })
+        } else {
+            return res.status(200).send({
+                message: 'Successfully registered product: ' + req.body.name
+            })
+        }
+    });
 }
 
 /*
@@ -126,6 +128,46 @@ productsController.getSpecificProduct = (req, res) => {
                 product
             })
         }
+    })
+}
+
+/*
+Retreives a specific product.
+*/
+productsController.getAPIProduct = (req, res) => {
+
+    console.log("Entered method")
+
+    const skuCode = req.params.skuCode
+    const merchantID = req.params.merchantID
+
+    if (typeof skuCode !== "string" && typeof merchantID !== "string") {
+        return res.status(600).send({
+            error: 'Type failure',
+            message: 'skuCode must be a string'
+        })
+    }
+
+    //skuCode lengths can be adjusted to suit requirements. 
+    if (skuCode.length < 6) {
+        return res.status(600).send({
+            error: 'Validation failure',
+            message: 'skuCode cannot be less than 6 characters'
+        })
+    }
+
+    var config = {
+        headers: {
+            'x-hero-merchant-id': 'YcxOCwj0jg'
+        }
+    };
+
+    apiURL = 'https://dev.backend.usehero.com/products/' + skuCode
+
+    axios.get(apiURL, config).then(function (response) {
+        res.status(200).send(response.data)
+    }).catch(err => {
+        res.status(500).send({message: 'Could not retreive data'})
     })
 }
 
