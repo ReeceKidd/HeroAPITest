@@ -30,7 +30,14 @@ Tests that name is at least the minimum length. (4)
 
 --/products route
 
-Tests that two products are returned successfully. 
+Tests that products are returned successfully. 
+
+--/products/:productID 
+
+Test that specified product is returned. 
+Test that random productID returns nothing
+Tests that skuCode does not exceed a maximum length. (20)
+Tests that skuCode does not exceed a minimum length. (6)
 
 */
 
@@ -40,6 +47,7 @@ var chai = require('chai');
 var chaiHttp = require('chai-http');
 var mongoose = require("mongoose");
 mongoose.Promise = require('bluebird');
+var assert = require("assert"); // node.js core module
 
 var server = require('../src/app.js');
 var Product = require('../models/products');
@@ -283,9 +291,9 @@ describe('Tests that name is at least the minimum length (4)', () => {
 
 //TODO: Need to improve the below tests. 
 
-// /products test 
-describe('Tests that two products are returned successfully', () => {
-    it('It should successfully return two products', (done) => {
+// /products/:product test 
+describe('Tests that a specified product is returned successfully', () => {
+    it('It should successfully return one specified product', (done) => {
         chai.request(server)
             .get('/products')
             .send({
@@ -298,9 +306,43 @@ describe('Tests that two products are returned successfully', () => {
     })
 })
 
-// /product/:productID test
+describe('Tests that no product is returned with random ID', () => {
+    it('It should return no products', (done) => {
+        chai.request(server)
+            .get('/products/1234JBCD')
+            .end((err, res) => {
+                res.should.have.status(404)
+                done()
+            })
+    })
+})
+
+describe('Tests maximum input length of SKUCode (20)', () => {
+    it('It should fail as SKU code is above 20 characters', (done) => {
+        chai.request(server)
+            .get('/products/123456789ABCDEFGHIJKLMNOP')
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests minimum input length of SKUCode (6)', () => {
+    it('It should fail as SKU code is 4 characters', (done) => {
+        chai.request(server)
+            .get('/products/1234')
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+
+// /product/ test
 describe('Tests that specific product is returned successfully', () => {
-    it('It should successfully return one prodcut', (done) => {
+    it('It should successfully return two prodcuts', (done) => {
         chai.request(server)
             .get('/products/')
             .end((err, res) => {
@@ -309,6 +351,8 @@ describe('Tests that specific product is returned successfully', () => {
             })
     })
 })
+
+
 
 after(async () => {
     require('../src/app.js').stop();

@@ -78,7 +78,7 @@ productsController.registerProduct = (req, res) => {
             }
         });
     } catch (exception) {
-        //Catches duplicate product ID. 
+        //Catches duplicate sku code. 
     }
 }
 
@@ -89,24 +89,44 @@ productsController.getSpecificProduct = (req, res) => {
 
     const skuCode = req.params.skuCode
 
+    if (typeof skuCode !== "string") {
+        return res.status(600).send({
+            error: 'Type failure',
+            message: 'skuCode must be a string'
+        })
+    }
+
+    //skuCode lengths can be adjusted to suit requirements. 
+    if (skuCode.length < 6) {
+        return res.status(600).send({
+            error: 'Validation failure',
+            message: 'skuCode cannot be less than 6 characters'
+        })
+    }
+
+    if (skuCode.length > 20) {
+        return res.status(600).send({
+            error: 'Validation failure',
+            message: 'skuCode cannot be greater than 20 characters'
+        })
+    }
+
     var query = {
         'skuCode': skuCode
     }
     Product.findOne(query, function (err, product) {
         if (err) {
-            res.status(500)
-            res.send({
+            return res.status(500).send({
                 message: 'Server error',
                 error: 'Server error'
             })
         } else if (!product) {
-            res.status(400)
-            res.send({
+            return res.status(404).send({
                 message: 'Could not find a product with that skuCode.',
                 error: 'Unknown product error'
             })
         } else {
-            res.status(200).send({
+            return res.status(200).send({
                 product: product
             })
         }

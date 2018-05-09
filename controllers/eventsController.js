@@ -43,6 +43,8 @@ eventsController.createEvent = (req, res) => {
     for the existing products in the database. 
     */
 
+    let productFound
+
     for (var x = 0; x < req.body.lineItems.length; x++) {
 
         if (req.body.lineItems[x].quantity === undefined) {
@@ -72,7 +74,29 @@ eventsController.createEvent = (req, res) => {
                 message: "lineItems.skuCode cannot be undefined"
             })
         }
+
+        let skuCode = req.body.lineItems[x].skuCode
+
+        //Checks to see if skuCode exists in database. 
+        Product.find({ skuCode: req.body.lineItems[x].skuCode }, function(err, product) {
+            if(err){
+                res.render('error', { errorMsg: "Error blah blah" } )
+            } else {
+                if (product.length === 0) {
+                    res.status(600).send({
+                        error: 'No product exists',
+                        message: 'No product exists with skuCode: ' + skuCode
+                    })
+                    productFound = false
+                } 
+            }
+        });
+
     } //End of for loop. 
+
+    if(!productFound){
+        return
+    }
 
     if (typeof req.body.merchant !== "string") {
         return res.status(600).send({
