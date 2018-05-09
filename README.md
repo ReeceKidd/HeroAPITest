@@ -7,13 +7,13 @@ To test the project go to the "tests" sub folder and run the following command o
 # CustomersTest 
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
 
-#Intrepration 
-My intrepreation of the problem was to create an API that allows users to get products and for users and merchants
+# Interpretation 
+My interpretation of the problem was to create an API that allows users to get products and for users and merchants
 to register, and return information. <br>
 
-I'm aware that the instructions said to use the exisitng API but I didn't get any information returned using the /products
-call. I also didn't have the port information. If I have misintrepreted I'd be more than happy to give it another go. If this 
-isn't what you were looking for thank you for the oppurtunity anyway. I'm more than happy to take on any and all feedback. 
+I'm aware that the instructions said to use the existing API but I didn't get any information returned using the /products
+call. I also didn't have the port information. If I have misinterpreted I'd be more than happy to give it another go. If this 
+isn't what you were looking for thank you for the opportunity anyway. I'm more than happy to take on all feedback. 
 
 # Available API routes. 
 <b>Events Routes</b><br>
@@ -44,3 +44,8 @@ routes.get('/users/:userID', userController.getSpecificUser)<br>
 routes.post('/register-user', userController.registerUser)<br>
 
 Additional user routes could be to delete users. 
+
+
+
+
+
