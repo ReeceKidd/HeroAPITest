@@ -1,15 +1,19 @@
 #Running the project
 
-To run the project, download a local copy and run "npm start"
+To run the project, download a local copy and run <b>"npm start"</b>
 
-To test the project go to the "tests" sub folder and run the following command on each of the files: "mocha [fileName] --timeout=0
+To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>
 
 # CustomersTest 
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
 
 #Intrepration 
 My intrepreation of the problem was to create an API that allows users to get products and for users and merchants
-to register, and return documents. 
+to register, and return information. <br>
+
+I'm aware that the instructions said to use the exisitng API but I didn't get any information returned using the /products
+call. I also didn't have the port information. If I have misintrepreted I'd be more than happy to give it another go. If this 
+isn't what you were looking for thank you for the oppurtunity anyway. I'm more than happy to take on any and all feedback. 
 
 # Available API routes. 
 <b>Events Routes</b><br>
@@ -19,7 +23,6 @@ routes.get('/events', eventsController.getAllEvents)<br>
 
 Additional event routes that could be added are the ability to refund or cancel a transaction. 
 
-<br>
 <b>Merchant Routes</b><br>
 routes.get('/merchants', merchantController.getMerchants)<br>
 routes.get('/merchants/:merchantID', merchantController.getSpecificMerchant)<br>
