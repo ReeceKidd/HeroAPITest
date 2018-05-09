@@ -16,7 +16,7 @@ to register and return information. <br>
 
 I'm aware that the instructions said to use the existing API but I didn't get any information returned using the /products
 call. I also didn't have the port information. If I have misinterpreted I'd be more than happy to give it another go. If this 
-isn't what you were looking for thank you for the opportunity anyway. I'm more than happy to take on all feedback. 
+isn't what you were looking for thank you for the opportunity anyway. I'm more than happy to take on all feedback. #Update. I hadn't used curl before, so I made the stupid mistake of not realising it was a header parameter. I have added two new API routes that retrieve the product details. I can adapt the current code to better match the requirements if needed. 
 
 # Available API routes. 
 <b>Events Routes</b><br>
@@ -53,6 +53,7 @@ routes.get('/users/:userID', userController.getSpecificUser)<br>
 routes.post('/register-user', userController.registerUser)<br>
 
 Additional user routes could be to delete users. 
+
 
 
 
