@@ -11,7 +11,7 @@ This solution uses a MongoDB database, node and express to offer various API rou
 
 # Interpretation 
 My interpretation of the problem was to create an API that allows users to get products and for users and merchants
-to register, and return information. <br>
+to register and return information. <br>
 
 I'm aware that the instructions said to use the existing API but I didn't get any information returned using the /products
 call. I also didn't have the port information. If I have misinterpreted I'd be more than happy to give it another go. If this 
@@ -24,6 +24,8 @@ routes.get('/events/:merchantID', eventsController.summaryOfEvents)<br>
 routes.get('/events', eventsController.getAllEvents)<br>
 
 Additional event routes that could be added are the ability to refund or cancel a transaction. 
+May have misinterpreted this it might be better to have a call to the productAPI inside of this based on 
+the SKU code to populate the product data. It may also be desirable for the server to calculate the price. 
 
 <b>Merchant Routes</b><br>
 routes.get('/merchants', merchantController.getMerchants)<br>
@@ -34,8 +36,11 @@ Additional merchant routes that could be added, would be the ability to delete m
 <br>
 
 <b>Products Routes</b>
+//Products Routes
 routes.get('/products', productsController.getAllProducts)<br>
+routes.get('/api/products', productsController.getAllProductsAPI)<br>
 routes.get('/products/:skuCode', productsController.getSpecificProduct)<br>
+routes.get('/api/products/:skuCode', productsController.getProductAPI)<br>
 routes.post('/register-product', productsController.registerProduct)<br>
 
 Additional product routes could be to find the merchants details associated with project. 
@@ -47,6 +52,8 @@ routes.get('/users/:userID', userController.getSpecificUser)<br>
 routes.post('/register-user', userController.registerUser)<br>
 
 Additional user routes could be to delete users. 
+
+
 
 
 
