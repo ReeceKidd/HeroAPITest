@@ -19,8 +19,9 @@ routes.post('/register-merchant', merchantController.registerMerchant)
 
 //Products Routes
 routes.get('/products', productsController.getAllProducts)
+routes.get('/api/products', productsController.getAllProductsAPI)
 routes.get('/products/:skuCode', productsController.getSpecificProduct)
-routes.get('/api/products/:skuCode', productsController.getAPIProduct)
+routes.get('/api/products/:skuCode', productsController.getProductAPI)
 routes.post('/register-product', productsController.registerProduct)
 
 //User routes

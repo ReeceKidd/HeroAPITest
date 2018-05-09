@@ -134,7 +134,7 @@ productsController.getSpecificProduct = (req, res) => {
 /*
 Retreives a specific product.
 */
-productsController.getAPIProduct = (req, res) => {
+productsController.getProductAPI = (req, res) => {
 
     console.log("Entered method")
 
@@ -185,6 +185,27 @@ productsController.getAllProducts = (req, res) => {
         res.send({
             products
         });
+    })
+}
+
+/*
+Returns a list of all products. 
+Not too sure if this is correct as it is returning an empty Array
+*/
+productsController.getAllProductsAPI = (req, res) => {
+    var config = {
+        headers: {
+            'x-hero-merchant-id': 'YcxOCwj0jg'
+        }
+    };
+
+    apiURL = 'https://dev.backend.usehero.com/products'
+
+    axios.get(apiURL).then(function (response) {
+        console.log(response)
+        res.status(200).send(response.data)
+    }).catch(err => {
+        res.status(500).send({message: 'Could not retreive data'})
     })
 }
 
