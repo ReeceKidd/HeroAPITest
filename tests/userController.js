@@ -22,6 +22,7 @@ Tests that lastname  is a string
 
 email:
 Tests that email exists
+Tests that email isn't already registered. 
 Tests that email must be valid
 Tests that email is a string
 
@@ -31,11 +32,15 @@ Tests that post code is the minimum length (7)
 Tests that post code does not exceed the maximum length (7)
 Tests that post code is a string
 
-userID: 
-Tests that userID exists. 
-Tests that userID is the minimum length (10)
-Tests that userID does not exceed the maximum length (10)
-Tests that userID is a string.
+--user/
+Tests that users are successfully returned. 
+
+--/user/:userID 
+
+Test that specified user is returned. 
+Test that random userID returns nothing
+Tests that userID does not exceed a maximum length. (10)
+Tests that userID does not exceed a minimum length. (10)
 */
 
 process.env.NODE_ENV = 'test';
@@ -54,6 +59,7 @@ chai.use(chaiHttp);
 //Empty the test database before starting
 User.remove({}, function (err) {})
 
+//Creates user needed for tests. 
 describe('Tests for valid registration', () => {
     it('It should register as request is valid', (done) => {
         chai.request(server)
@@ -61,9 +67,9 @@ describe('Tests for valid registration', () => {
             .send({
                 firstName: "ABC",
                 lastName: "Kidd",
-                email: "testuser953@gmail.com",
+                email: "testuser@gmail.com",
                 postcode: "BT319Y4",
-                userID: "123456789A"
+                userID: "12345678BB"
             })
             .end((err, res) => {
                 res.should.have.status(200)
@@ -233,6 +239,24 @@ describe('Tests that email must be valid', () => {
     })
 })
 
+describe('Tests that users cant register with exisitng email', () => {
+    it('It should fail as email is already registered', (done) => {
+        chai.request(server)
+            .post('/register-user')
+            .send({
+                firstName: "ABC",
+                lastName: "Kidd",
+                email: "testuser@gmail.com",
+                postcode: "BT319Y4",
+                userID: "12345678BL"
+            })
+            .end((err, res) => {
+                res.should.have.status(500)
+                done()
+            })
+    })
+})
+
 describe('Tests that email exists', () => {
     it('It should fail as email is absent', (done) => {
         chai.request(server)
@@ -275,7 +299,7 @@ describe('Tests that postcode exists', () => {
             .send({
                 firstName: "Reece",
                 lastName: "Kidd",
-                email: "test@gmail.com", 
+                email: "test@gmail.com",
                 userID: "123456789A"
             })
             .end((err, res) => {
@@ -346,11 +370,29 @@ describe('Tests that userID exists', () => {
             .send({
                 firstName: "Reece",
                 lastName: "Kidd",
-                email: "test@gmail.com", 
+                email: "test@gmail.com",
                 postcode: "BT319Y4"
             })
             .end((err, res) => {
                 res.should.have.status(950)
+                done()
+            })
+    })
+})
+
+describe('Tests that users cant register with exisitng userID', () => {
+    it('It should fail as userID is already registered', (done) => {
+        chai.request(server)
+            .post('/register-user')
+            .send({
+                firstName: "Reece",
+                lastName: "Kidd",
+                email: "testuser123@gmail.com",
+                postcode: "BT319Y4",
+                userID: "12345678BB"
+            })
+            .end((err, res) => {
+                res.should.have.status(500)
                 done()
             })
     })
@@ -410,6 +452,63 @@ describe('Tests that userID is a string', () => {
     })
 })
 
+//-users
+describe('Tests that get users is working correctly', () => {
+    it('It should successfully return users', (done) => {
+        chai.request(server)
+            .get('/users')
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
+
+//user/:userID test 
+describe('Tests that a specified user is returned successfully', () => {
+    it('It should successfully return one specified user', (done) => {
+        chai.request(server)
+            .get('/users/12345678BB')
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
+
+describe('Tests that no user is returned with random ID', () => {
+    it('It should return no users', (done) => {
+        chai.request(server)
+            .get('/users/1234JBCDAE')
+            .end((err, res) => {
+                res.should.have.status(404)
+                done()
+            })
+    })
+})
+
+describe('Tests maximum input length of userID (10)', () => {
+    it('It should fail as userID is above 10 characters', (done) => {
+        chai.request(server)
+            .get('/users/123456789ABCDEFGHIJKLMNOP')
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests minimum length of merchantID (10)', () => {
+    it('It should fail as userID is 4 characters', (done) => {
+        chai.request(server)
+            .get('/users/1234')
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
 after(async () => {
-    require('../src/app.js').stop();
+    User.remove({}, function (err) {})
 });

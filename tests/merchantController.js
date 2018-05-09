@@ -31,6 +31,16 @@ Tests that merchantID is the minimum length (10)
 Tests that merchantID does not exceed the maximum length (10)
 Tests that merchantID is a string
 
+--merchant
+Tests that merchants are successfully returned. 
+
+--/merchant/:merchantID 
+
+Test that specified merchant is returned. 
+Test that random merchantID returns nothing
+Tests that merchantID does not exceed a maximum length. (10)
+Tests that merchantID does not exceed a minimum length. (10)
+
 */
 
 process.env.NODE_ENV = 'test';
@@ -49,6 +59,27 @@ chai.use(chaiHttp);
 //Empty the test database before starting
 Merchant.remove({}, function (err) {})
 
+//Creates merchant needed for tests. 
+before(() => {
+    //Register merchant test
+    describe('Tests that name exists', () => {
+        it('It should fail as name is absent from request', (done) => {
+            chai.request(server)
+                .post('/register-merchant')
+                .send({
+                    email: "merchant953@gmail.com",
+                    postcode: "BT319Y4",
+                    merchantID: "123456789A"
+                })
+                .end((err, res) => {
+                    res.should.have.status(950)
+                    done()
+                })
+        })
+    })
+});
+
+//Creates valid merchant 
 describe('Tests for valid merchant registration', () => {
     it('It should register as request is valid', (done) => {
         chai.request(server)
@@ -66,22 +97,8 @@ describe('Tests for valid merchant registration', () => {
     })
 })
 
-//Register merchant test
-describe('Tests that name exists', () => {
-    it('It should fail as name is absent from request', (done) => {
-        chai.request(server)
-            .post('/register-merchant')
-            .send({
-                email: "merchant953@gmail.com",
-                postcode: "BT319Y4",
-                merchantID: "123456789A"
-            })
-            .end((err, res) => {
-                res.should.have.status(950)
-                done()
-            })
-    })
-})
+
+
 
 describe('Tests that name is at least two characters long', () => {
     it('It should fail as name is equal to "A', (done) => {
@@ -313,6 +330,63 @@ describe('Tests that merchantID is a string', () => {
                 postcode: "BT319TH",
                 merchantID: 123456789
             })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+//-merchants
+describe('Tests that get merchants is working correctly', () => {
+    it('It should successfully return merchant', (done) => {
+        chai.request(server)
+            .get('/merchants')
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
+
+//merchant/:merchantID test 
+describe('Tests that a specified merchant is returned successfully', () => {
+    it('It should successfully return one specified merchant', (done) => {
+        chai.request(server)
+            .get('/merchants/123456789A')
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
+
+describe('Tests that no merchant is returned with random ID', () => {
+    it('It should return no merchants', (done) => {
+        chai.request(server)
+            .get('/merchants/1234JBCDAE')
+            .end((err, res) => {
+                res.should.have.status(404)
+                done()
+            })
+    })
+})
+
+describe('Tests maximum input length of merchantID (10)', () => {
+    it('It should fail as merchantID is above 10 characters', (done) => {
+        chai.request(server)
+            .get('/merchants/123456789ABCDEFGHIJKLMNOP')
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests minimum length of merchantID (10)', () => {
+    it('It should fail as merchantID is 4 characters', (done) => {
+        chai.request(server)
+            .get('/merchants/1234')
             .end((err, res) => {
                 res.should.have.status(600)
                 done()

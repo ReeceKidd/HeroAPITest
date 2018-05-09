@@ -289,8 +289,6 @@ describe('Tests that name is at least the minimum length (4)', () => {
     })
 })
 
-//TODO: Need to improve the below tests. 
-
 // /products/:product test 
 describe('Tests that a specified product is returned successfully', () => {
     it('It should successfully return one specified product', (done) => {
@@ -340,9 +338,9 @@ describe('Tests minimum input length of SKUCode (6)', () => {
 })
 
 
-// /product/ test
-describe('Tests that specific product is returned successfully', () => {
-    it('It should successfully return two prodcuts', (done) => {
+//-products
+describe('Tests that get products is working correctly', () => {
+    it('It should successfully return products', (done) => {
         chai.request(server)
             .get('/products/')
             .end((err, res) => {
@@ -352,8 +350,11 @@ describe('Tests that specific product is returned successfully', () => {
     })
 })
 
-
-
 after(async () => {
     require('../src/app.js').stop();
+    Product.remove({}, function (err) {
+        if (err) {
+            console.log('Error removing products from products collection')
+        }
+    })
 });

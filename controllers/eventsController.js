@@ -14,7 +14,7 @@ Create a new product event.
 */
 eventsController.createEvent = (req, res) => {
 
-    var undefinedFields = checkUndefinedFields(req.body, ['type', 'lineItems', 'merchant', 'user'])
+    var undefinedFields = checkUndefinedFields(req.body, ['type', 'lineItems', 'total', 'merchantID', 'userID'])
 
     if (undefinedFields) {
         return res.status(950).send({
@@ -37,13 +37,18 @@ eventsController.createEvent = (req, res) => {
         })
     }
 
+    if(typeof req.body.total !== "number"){
+        return res.status(600).send({
+            error: 'Type error',
+            message: "Total must be a number"
+        })
+    }
+
     /*
-    Checks that each line items object has an sku code and a quantity. 
+    Checks that each line items object has valid sku codes, quantities and prices. 
     An additional check would be to see if a valid SKU code was entered
     for the existing products in the database. 
     */
-
-    let productFound
 
     for (var x = 0; x < req.body.lineItems.length; x++) {
 
@@ -68,6 +73,56 @@ eventsController.createEvent = (req, res) => {
             })
         }
 
+        if (req.body.lineItems[x].quantity === undefined) {
+            return res.status(600).send({
+                error: 'Type error',
+                message: "lineItems object must contain sub totals"
+            })
+        }
+
+        /*
+        If price is undefined it could potentially be retreived 
+        using the SKU code. 
+        */
+        if(req.body.lineItems[x].price === undefined){
+            return res.status(600).send({
+                error: 'Type error',
+                message: "lineItems object must contain product price"
+            })
+        }
+
+        if(typeof req.body.lineItems[x].price !== "number"){
+            return res.status(600).send({
+                error: 'Type error',
+                message: "lineItems.price must be a number"
+            })
+        }
+
+        if(typeof req.body.lineItems[x].price < 0 ) {
+            return res.status(600).send({
+                error: 'Type error',
+                message: "lineItems.price cannot be less than 0."
+            }) 
+        }
+
+        /*
+        Sub total can be calculated on the back-end if this is 
+        preffered. 
+        */
+        if(typeof req.body.lineItems[x].subTotal !== "number") {
+            return res.status(600).send({
+                error: 'Type error',
+                message: "lineItems.subTotal must be a number"
+            }) 
+        }
+
+        if(typeof req.body.lineItems[x].subTotal < 0 ) {
+            return res.status(600).send({
+                error: 'Type error',
+                message: "lineItems.subTotal cannot be less than 0."
+            }) 
+        }
+
         if (req.body.lineItems[x].skuCode === undefined) {
             return res.status(600).send({
                 error: 'Type error',
@@ -75,40 +130,16 @@ eventsController.createEvent = (req, res) => {
             })
         }
 
-        let skuCode = req.body.lineItems[x].skuCode
-
-        //Checks to see if skuCode exists in database. 
-        Product.find({
-            skuCode: req.body.lineItems[x].skuCode
-        }, function (err, product) {
-            if (err) {
-                res.status(500).send({
-                    error: 'Server error',
-                    message: err
-                })
-            }
-            if (product.length === 0) {
-                productFound = false
-            }
-        });
-
     } //End of for loop. 
 
-    if (productFound === false) {
-        return res.status(600).send({
-            error: 'No product exists',
-            message: 'No product exists with skuCode: ' + skuCode
-        })
-    }
-
-    if (typeof req.body.merchant !== "string") {
+    if (typeof req.body.merchantID !== "string") {
         return res.status(600).send({
             error: 'Type error',
             message: "Merchant must be a string"
         })
     }
 
-    if (typeof req.body.user !== "string") {
+    if (typeof req.body.userID !== "string") {
         return res.status(600).send({
             error: 'Type error',
             message: "User must be a string"
@@ -153,6 +184,63 @@ eventsController.createEvent = (req, res) => {
             })
         }
     });
+}
+
+eventsController.summaryOfEvents = (req, res) => {
+
+    const merchantID = req.params.merchantID
+
+    if (typeof merchantID !== "string") {
+        return res.status(600).send({
+            error: 'Type failure',
+            message: 'merchantID must be a string'
+        })
+    }
+
+    if (merchantID.length !== 10) {
+        return res.status(600).send({
+            error: 'Validation failure',
+            message: 'merchantID must be 10 characters long'
+        })
+    }
+
+    var query = {
+        'merchantID': merchantID
+    }
+    let eventsResult
+    ProductEvent.find(query).lean().exec(function (err, events) {
+        if (err) {
+            return res.status(500).send({
+                message: 'Server error',
+                error: 'Server error'
+            })
+        } else if (events.length === 0) {
+            return res.status(404).send({
+                message: 'Could not find events.',
+                error: 'Could not find events for merchants with ID: ' + merchantID
+            })
+        } else {
+            
+            res.status(200).send(events)
+        }
+    })
+}
+
+/*
+Retreives a list of all products. 
+*/
+eventsController.getAllEvents = (req, res) => {
+    var query = ProductEvent.find({}).select('-__v')
+
+    query.exec(function (err, events) {
+        if (err) {
+            res.status(500).send(err)
+            return
+        }
+        res.send({
+            events
+        });
+    })
 }
 
 module.exports = eventsController

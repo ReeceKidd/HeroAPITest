@@ -110,27 +110,27 @@ productsController.getSpecificProduct = (req, res) => {
     var query = {
         'skuCode': skuCode
     }
-    Product.findOne(query, function (err, product) {
+    Product.find(query, function (err, product) {
         if (err) {
             return res.status(500).send({
                 message: 'Server error',
                 error: 'Server error'
             })
-        } else if (!product) {
+        } else if (product.length === 0) {
             return res.status(404).send({
                 message: 'Could not find a product with that skuCode.',
                 error: 'Unknown product error'
             })
         } else {
             return res.status(200).send({
-                product: product
+                product
             })
         }
     })
 }
 
 /*
-Retreives a list of all products. 
+Returns a list of all products. 
 */
 productsController.getAllProducts = (req, res) => {
     var query = Product.find({}).select('-__v')

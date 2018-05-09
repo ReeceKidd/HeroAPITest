@@ -50,21 +50,19 @@ userController.registerUser = (req, res) => {
             error: 'Validation failure'
         })
     }
-    //Try and catch is needed for duplicate emails. 
-        const saveUser = new User(req.body)
-        saveUser.save(function (err) {
-
-            if (err) {
-                return res.status(500).json({
-                    message: err,
-                    error: 'Server faillure'
-                })
-            } else {
-                return res.status(200).json({
-                    message: 'Successfully registered: ' + req.body.firstName + ' ' + req.body.lastName
-                })
-            }
-        });
+    const saveUser = new User(req.body)
+    saveUser.save(function (err) {
+        if (err) {
+            return res.status(500).json({
+                message: err,
+                error: 'Server faillure'
+            })
+        } else {
+            return res.status(200).json({
+                message: 'Successfully registered user: ' + req.body.firstName + ' ' + req.body.lastName
+            })
+        }
+    });
 }
 
 /*
@@ -85,26 +83,26 @@ userController.getSpecificUser = (req, res) => {
     if regex is a requirement. 
     */
 
-    if (req.params.userID.length > 50) {
-        return res.status(500).send({
-            message: 'Parameter error max input size exceeded',
+    if (req.params.userID.length !== 10) {
+        return res.status(600).send({
+            message: 'Parameter error userID must be 10 characters',
             error: 'Input error'
         })
     }
 
     const userID = req.params.userID
 
-    User.findById(userID, function (err, user) {
+    User.find({"userID":userID}, function (err, user) {
         if (err) {
             res.status(500)
             res.send({
                 message: err,
                 error: 'Server error'
             })
-        } else if (!user) {
-            res.status(400)
+        } else if (user.length === 0) {
+            res.status(404)
             res.send({
-                message: 'Could not find a user with that ID.',
+                message: 'Could not find a user with ID: ' + userID,
                 error: 'Unknown user error'
             })
         } else {

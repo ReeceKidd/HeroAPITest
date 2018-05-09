@@ -1,9 +1,9 @@
-var express = require('express')
-var path = require('path')
-var bodyParser = require('body-parser')
-var http = require('http')
-var mongoose = require('mongoose')
-var expressValidator = require('express-validator')
+const express = require('express')
+const path = require('path')
+const bodyParser = require('body-parser')
+const http = require('http')
+const mongoose = require('mongoose')
+const expressValidator = require('express-validator')
 
 var routes = require('./routes')
 
