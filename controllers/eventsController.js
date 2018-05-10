@@ -148,13 +148,13 @@ eventsController.createEvent = (req, res) => {
     }
 
     /*
-    For the purposes of this assignment transaction is only shown, 
-    however refunds would also need to be supported in a live demo. 
+    For the purposes of this assignment transaction and product-view
+    events are the only two supported. 
     */
-    if (req.body.type !== 'transaction') {
+    if (req.body.type !== 'transaction' && req.body.type !== 'product-view') {
         return res.status(600).send({
             error: 'Unsupported option failure',
-            message: 'API currently only supports transactions.'
+            message: 'API currently only supports transactions or product views.'
         })
     }
 
@@ -421,7 +421,7 @@ eventsController.summaryOfEventsAPI = (req, res) => {
                 let apiURL = heroDevAPI + '887447521318'
                 promises.push(axios.get(apiURL).catch((err) => {
                     res.status(404).send("Could not find product with SKU code: " + events[0].lineItems[x].skuCode)
-                } ))
+                }))
             }
 
             //Wait for all promises to return 

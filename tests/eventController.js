@@ -10,7 +10,8 @@ Tests completed for the merchantID controller:
 
 type: 
 Tests that type exists in request
-Tests that type equals transaction
+Tests that transaction type is supported
+Tests that product-view type is supported. 
 
 lineItems (Array):
 Tests that line items exists in request. 

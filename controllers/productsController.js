@@ -13,7 +13,7 @@ const Product = require('../models/products')
 const config = require('../src/apiConfiguration')
 
 //heroAPI
-const heroDevAPI = 'https://dev.backend.usehero.com/products/' 
+const heroDevAPI = 'https://dev.backend.usehero.com/products/'
 
 // Request validators
 const productsValidation = require('./validators/productsValidation')
@@ -192,9 +192,9 @@ Returns a list of all products.
 Not too sure if this is correct as it is returning an empty Array
 */
 productsController.getAllProductsAPI = (req, res) => {
-    
+
     axios.get(heroDevAPI).then(function (response) {
-        if(response.data === []){
+        if (response.data === []) {
             res.status(200).send("No products found for merchant: " + merchantID)
         } else {
             res.status(200).send(response)
