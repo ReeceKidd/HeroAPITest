@@ -3,9 +3,9 @@ This is where clients configure their merchantID for use in the api.
 */
 var argv = require('yargs')
     .options({
-        'H': {
+        'M': {
             alias: 'merchantID',
-            demandOption: true,
+            default: 'iWU4p9dJ9m',
             describe: 'Valid merchantID is required for API',
             type: 'string',
             length: 10
@@ -13,9 +13,9 @@ var argv = require('yargs')
     })
     .argv;
 
-if (argv.H.length !== 10) {
+if (argv.M.length !== 10) {
     console.log("merchantID must be ten characters in length")
     return false
 }
 
-module.exports = argv.H
+module.exports = argv.M

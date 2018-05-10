@@ -895,5 +895,4 @@ describe('Tests that get all events is working correctly', () => {
 
 
 after(async () => {
-    require('../src/app.js').stop();
 });

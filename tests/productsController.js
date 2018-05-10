@@ -351,7 +351,6 @@ describe('Tests that get products is working correctly', () => {
 })
 
 after(async () => {
-    require('../src/app.js').stop();
     Product.remove({}, function (err) {
         if (err) {
             console.log('Error removing products from products collection')

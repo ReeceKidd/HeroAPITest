@@ -395,5 +395,5 @@ describe('Tests minimum length of merchantID (10)', () => {
 })
 
 after(async () => {
-    require('../src/app.js').stop();
+    
 });

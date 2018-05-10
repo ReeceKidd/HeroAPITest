@@ -12,6 +12,8 @@ const app = express()
 // User defined merchantID for API. 
 const merchantID = require('./merchantID')
 
+
+
 // Database configuration file. 
 var config = require('./_config')
 
