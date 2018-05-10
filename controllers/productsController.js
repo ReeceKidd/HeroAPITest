@@ -9,8 +9,8 @@ getAllProducts
 const axios = require('axios')
 const Product = require('../models/products')
 
-//merchantID needed for api routes. 
-const merchantID = require('../src/merchantID')
+//Configuration for Hero API calls. 
+const config = require('../src/apiConfiguration')
 
 //heroAPI
 const heroDevAPI = 'https://dev.backend.usehero.com/products/' 
@@ -159,12 +159,6 @@ productsController.getProductAPI = (req, res) => {
         })
     }
 
-    var config = {
-        headers: {
-            'x-hero-merchant-id': merchantID
-        }
-    };
-
     apiURL = heroDevAPI + skuCode
 
     axios.get(apiURL, config).then(function (response) {
@@ -198,12 +192,7 @@ Returns a list of all products.
 Not too sure if this is correct as it is returning an empty Array
 */
 productsController.getAllProductsAPI = (req, res) => {
-    var config = {
-        headers: {
-            'x-hero-merchant-id': merchantID
-        }
-    };
-
+    
     axios.get(heroDevAPI).then(function (response) {
         if(response.data === []){
             res.status(200).send("No products found for merchant: " + merchantID)
