@@ -417,11 +417,12 @@ eventsController.summaryOfEventsAPI = (req, res) => {
             for (var x = 0; x < events[0].lineItems.length; x++) {
                 //Need to gather all the API calls that need to be made. 
                 //let apiURL = heroDevAPI + events[0].lineItems[x].skuCode
+                //Currently forcing it to use only valid product ID's as I can't find a list of available products. 
                 let apiURL = heroDevAPI + '887447521318'
-                promises.push(axios.get(apiURL))
+                promises.push(axios.get(apiURL).catch((err) => {
+                    res.status(404).send("Could not find product with SKU code: " + events[0].lineItems[x].skuCode)
+                } ))
             }
-
-            console.log(promises)
 
             //Wait for all promises to return 
             axios.all(promises).then(function (results) {
@@ -434,16 +435,9 @@ eventsController.summaryOfEventsAPI = (req, res) => {
                     products: products
                 })
             });
-
-
-
         }
-
-
     })
 }
-
-
 
 /*
 Retreives a list of all products. 
