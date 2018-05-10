@@ -1,6 +1,10 @@
 # Running the project
 
-To run the project, download a local copy and run <b>"npm start"</b>. A mongod instance will need to be run before the 
+To run the project, download a local copy and run <b>node node_modules/nodemon/bin/nodemon.js src/app.js -H=[merchantID]</b><br> 
+
+A valid example is: <b>node node_modules/nodemon/bin/nodemon.js src/app.js -H=YcxOCwj0jg</b><br>
+
+A mongod instance will need to be run before the 
 application will launch successfully. If it's easier I can provide an Ngrok URL to test the API. 
 
 # Tests
