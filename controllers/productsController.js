@@ -12,6 +12,9 @@ const Product = require('../models/products')
 //merchantID needed for api routes. 
 const merchantID = require('../src/merchantID')
 
+//heroAPI
+const heroDevAPI = 'https://dev.backend.usehero.com/products/' 
+
 // Request validators
 const productsValidation = require('./validators/productsValidation')
 const checkUndefinedFields = require('./checkers/undefinedChecker')
@@ -162,7 +165,7 @@ productsController.getProductAPI = (req, res) => {
         }
     };
 
-    apiURL = 'https://dev.backend.usehero.com/products/' + skuCode
+    apiURL = heroDevAPI + skuCode
 
     axios.get(apiURL, config).then(function (response) {
         res.status(200).send(response.data)
@@ -197,18 +200,19 @@ Not too sure if this is correct as it is returning an empty Array
 productsController.getAllProductsAPI = (req, res) => {
     var config = {
         headers: {
-            'x-hero-merchant-id': 'YcxOCwj0jg'
+            'x-hero-merchant-id': merchantID
         }
     };
 
-    apiURL = 'https://dev.backend.usehero.com/products'
-
-    axios.get(apiURL).then(function (response) {
-        console.log(response)
-        res.status(200).send(response.data)
+    axios.get(heroDevAPI).then(function (response) {
+        if(response.data === []){
+            res.status(200).send("No products found for merchant: " + merchantID)
+        } else {
+            res.status(200).send(response)
+        }
     }).catch(err => {
         res.status(500).send({
-            message: 'Could not retreive data'
+            message: err
         })
     })
 }
