@@ -13,9 +13,6 @@ var argv = require('yargs')
     })
     .argv;
 
-console.log('Length: ' + argv.H.length)
-console.log(argv.H)
-
 if (argv.H.length !== 10) {
     console.log("merchantID must be ten characters in length")
     return false

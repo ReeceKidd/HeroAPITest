@@ -44,3 +44,4 @@ if (merchantID !== false) {
 }
 
 module.exports = app
+module.exports.merchantID = merchantID

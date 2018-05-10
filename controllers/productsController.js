@@ -9,6 +9,9 @@ getAllProducts
 const axios = require('axios')
 const Product = require('../models/products')
 
+//merchantID needed for api routes. 
+const merchantID = require('../src/merchantID')
+
 // Request validators
 const productsValidation = require('./validators/productsValidation')
 const checkUndefinedFields = require('./checkers/undefinedChecker')
@@ -136,10 +139,7 @@ Retreives a specific product.
 */
 productsController.getProductAPI = (req, res) => {
 
-    console.log("Entered method")
-
     const skuCode = req.params.skuCode
-    const merchantID = req.params.merchantID
 
     if (typeof skuCode !== "string" && typeof merchantID !== "string") {
         return res.status(600).send({
@@ -158,7 +158,7 @@ productsController.getProductAPI = (req, res) => {
 
     var config = {
         headers: {
-            'x-hero-merchant-id': 'YcxOCwj0jg'
+            'x-hero-merchant-id': merchantID
         }
     };
 
@@ -167,7 +167,9 @@ productsController.getProductAPI = (req, res) => {
     axios.get(apiURL, config).then(function (response) {
         res.status(200).send(response.data)
     }).catch(err => {
-        res.status(500).send({message: 'Could not retreive data'})
+        res.status(500).send({
+            message: 'Could not retreive data'
+        })
     })
 }
 
@@ -205,7 +207,9 @@ productsController.getAllProductsAPI = (req, res) => {
         console.log(response)
         res.status(200).send(response.data)
     }).catch(err => {
-        res.status(500).send({message: 'Could not retreive data'})
+        res.status(500).send({
+            message: 'Could not retreive data'
+        })
     })
 }
 
