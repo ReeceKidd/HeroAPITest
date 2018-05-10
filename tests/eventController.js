@@ -12,6 +12,7 @@ type:
 Tests that type exists in request
 Tests that transaction type is supported
 Tests that product-view type is supported. 
+Tests that only transaction and product-view events are supported. 
 
 lineItems (Array):
 Tests that line items exists in request. 
@@ -225,7 +226,67 @@ describe('Tests that type exists', () => {
     })
 })
 
-describe('Tests that type is equal to transaction', () => {
+describe('Tests that transaction type is supported', () => {
+    it('It should pass as type is equal to transaction', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                lineItems: [{
+                        skuCode: "1234567AB",
+                        quantity: 1,
+                        price: 50.00,
+                        subTotal: 50.00
+                    },
+                    {
+                        skuCode: "12345NHAB",
+                        quantity: 1,
+                        price: 5.00,
+                        subTotal: 5.00
+                    }
+                ],
+                userID: "123456789A",
+                merchantID: "123456789A",
+                total: 55.00
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
+
+describe('Tests that transaction type is supported', () => {
+    it('It should pass as type is equal to transaction', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "product-view",
+                lineItems: [{
+                        skuCode: "1234567AB",
+                        quantity: 1,
+                        price: 50.00,
+                        subTotal: 50.00
+                    },
+                    {
+                        skuCode: "12345NHAB",
+                        quantity: 1,
+                        price: 5.00,
+                        subTotal: 5.00
+                    }
+                ],
+                userID: "123456789A",
+                merchantID: "123456789A",
+                total: 55.00
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
+    })
+})
+
+describe('Tests that type is equal to transaction or product-view', () => {
     it('It should fail as type is equal to refund', (done) => {
         chai.request(server)
             .post('/create-event')
