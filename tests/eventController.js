@@ -8,10 +8,12 @@ Tests completed for the merchantID controller:
 
 --create-event route
 
-type: 
-Tests that type exists in request
+before():
 Tests that transaction type is supported
 Tests that product-view type is supported. 
+
+type: 
+Tests that type exists in request
 Tests that only transaction and product-view events are supported. 
 
 userID: 
@@ -27,18 +29,14 @@ Tests that merchantID does not exceed the maximum length (10)
 Tests that merchantID is a string
 
 data: 
-Tests that data exists in request
-Tests that data is not an empty object
+Tests that data exists in transaction event
+Tests that data exists in product-view event
+Tests that data is not an empty object in transaction event
+Tests that data is not an empty object in product-view event
 
 // transaction Event Tests
-
-total: 
-Tests that total exists
-Tests that total is a >= 0.00
-Tests that total is a number.
-
 lineItems (Array):
-Tests that lineItems exists in request. 
+Tests that lineItems exists in request.
 Tests that lineItems contains objects. 
 
 Tests that lineItems.quantity exists in all line item objects.
@@ -58,10 +56,14 @@ Tests that lineItems.skuCode is a string in all line item objects.
 Tests that lineItems.skuCode is not less than the minimum length (6)
 Tests that lineItems.skuCode is not greater than (20)
 
-//transaction event tests end 
+total: 
+Tests that total exists
+Tests that total is a positive number
+Tests that total is a number.
+
+//transaction event tests end
 
 // product-view event Test
-
 product: 
 Tests that product exists
 Tests that product is an object
@@ -77,7 +79,6 @@ location:
 Tests that location exists
 Tests that location is a string. 
 Tests that location is the minimum length (6)
-
 
 // End of product-view event test
 
@@ -131,85 +132,83 @@ Merchant.remove({}, function (err) {
     }
 })
 
-//Creates other database items needed to test the event controller. 
-before(() => {
-    //Creates denim jacket product needed for test. 
-    describe('Creates denim-jacket product', () => {
-        it('Denim  product should be created as request is valid', (done) => {
-            chai.request(server)
-                .post('/register-product')
-                .send({
-                    skuCode: "1234567AC",
-                    name: "denim-jacket",
-                    price: 50.00
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+//Creates denim jacket product needed for test. 
+describe('Creates denim-jacket product', () => {
+    it('Denim  product should be created as request is valid', (done) => {
+        chai.request(server)
+            .post('/register-product')
+            .send({
+                skuCode: "1234567AC",
+                name: "denim-jacket",
+                price: 50.00
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-    //Creates tie product needed for test. 
-    describe('Creates tie product', () => {
-        it('Tie product should be created as request is valid', (done) => {
-            chai.request(server)
-                .post('/register-product')
-                .send({
-                    skuCode: "12345NHAB",
-                    name: "blue-tie",
-                    price: 5.00
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+})
+//Creates tie product needed for test. 
+describe('Creates tie product', () => {
+    it('Tie product should be created as request is valid', (done) => {
+        chai.request(server)
+            .post('/register-product')
+            .send({
+                skuCode: "12345NHAB",
+                name: "blue-tie",
+                price: 5.00
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-    //Creates merchantID for test. 
-    describe('Creates valid merchant', () => {
-        it('merchant should be registered as request is valid', (done) => {
-            chai.request(server)
-                .post('/register-merchant')
-                .send({
-                    name: "Prada",
-                    email: "prada@gmail.com",
-                    postcode: "BT319ZY",
-                    merchantID: "123456789A"
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+})
+//Creates merchantID for test. 
+describe('Creates valid merchant', () => {
+    it('merchant should be registered as request is valid', (done) => {
+        chai.request(server)
+            .post('/register-merchant')
+            .send({
+                name: "Prada",
+                email: "prada@gmail.com",
+                postcode: "BT319ZY",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-    //Creates userID for test. 
-    describe('Creates valid user', () => {
-        it('user should register as request is valid', (done) => {
-            chai.request(server)
-                .post('/register-user')
-                .send({
-                    firstName: "ABC",
-                    lastName: "Kidd",
-                    email: "testuserID953@gmail.com",
-                    postcode: "BT319Y4",
-                    userID: "123456789A"
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+})
+//Creates userID for test. 
+describe('Creates valid user', () => {
+    it('user should register as request is valid', (done) => {
+        chai.request(server)
+            .post('/register-user')
+            .send({
+                firstName: "ABC",
+                lastName: "Kidd",
+                email: "testuserID953@gmail.com",
+                postcode: "BT319Y4",
+                userID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-    //Creates transaction event for test
-    describe('Tests for valid transaction event creation', () => {
-        it('transaction Event should be created as request is valid', (done) => {
-            chai.request(server)
-                .post('/create-event')
-                .send({
-                    type: "transaction",
-                    data: {
-                        lineItems: [{
-                            skuCode: "1234567AB",
+})
+//Creates transaction event for test
+describe('Tests for valid transaction event creation', () => {
+    it('transaction Event should be created as request is valid', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "887447521318",
                             quantity: 1,
                             price: 50.00,
                             subTotal: 50.00
@@ -222,38 +221,39 @@ before(() => {
                         }
                     ],
                     total: 55.00
-                    },
-                    userID: "123456789A",
-                    merchantID: "123456789A"
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-    //Creates product-view event for test. 
-    describe('Tests for valid product-view event creation', () => {
-        it('product-view Event should be created as request is valid', (done) => {
-            chai.request(server)
-                .post('/create-event')
-                .send({
-                    type: "product-view",
-                    data: {
-                        product: {
-                            skuCode: "AAAA5NHAB"
-                        }
-                    },
-                    userID: "123456789A",
-                    merchantID: "123456789A"
-                })
-                .end((err, res) => {
-                    res.should.have.status(200)
-                    done()
-                })
-        })
+})
+//Creates product-view event for test. 
+describe('Tests for valid product-view event creation', () => {
+    it('product-view Event should be created as request is valid', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
+                    }
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(200)
+                done()
+            })
     })
-});
+})
+
 
 //type parameter checks. 
 describe('Tests that type exists', () => {
@@ -285,43 +285,14 @@ describe('Tests that type exists', () => {
     })
 })
 
-describe('Tests that transaction type is supported', () => {
-    it('It should pass as type is equal to transaction', (done) => {
+describe('Tests that type is equal to transaction or product-view', () => {
+    it('It should fail as type is equal to refund', (done) => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 5.00,
-                        subTotal: 5.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 55.00
-            })
-            .end((err, res) => {
-                res.should.have.status(200)
-                done()
-            })
-    })
-})
-
-describe('Tests that product-view type is supported. ', () => {
-    it('It should pass as type is equal to product-view', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "product-view",
+                type: "refund",
                 data: {
+                    location: "google.com",
                     product: {
                         skuCode: "AAAA5NHAB"
                     }
@@ -330,378 +301,7 @@ describe('Tests that product-view type is supported. ', () => {
                 merchantID: "123456789A"
             })
             .end((err, res) => {
-                res.should.have.status(200)
-                done()
-            })
-    })
-})
-
-describe('Tests that type is equal to transaction or product-view', () => {
-    it('It should fail as type is equal to refund', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "refund",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 5,
-                        subTotal: 5
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
                 res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-//lineItems tests. 
-describe('Tests that lineItems exists', () => {
-    it('It should fail as lineItems are absent from request', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(950)
-                done()
-            })
-    })
-})
-
-
-describe('Tests that lineItems contain objects', () => {
-    it('It should fail as lineItems contain primitive values', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [
-                    123, {
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineItem objects all contain quantitys', () => {
-    it('It should fail as one lineItem object is missing a quantity value', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineitem objects do not contain negative quantities', () => {
-    it('It should fail as one lineitem object contains a negative value', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: -10,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineItem objects all contain price', () => {
-    it('It should fail as one lineItem object is missing a price value', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineItem.price is positive ', () => {
-    it('It should fail as one lineItem.price is negative', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        subTotal: 50.00,
-                        price: -5.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineItem objects all contain sub Totals', () => {
-    it('It should fail as one lineItem object is missing a sub total', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        price: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineItem objects sub totals are not negative', () => {
-    it('It should fail as one lineItem object subtotal is negative', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: -50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-describe('Tests that lineitem objects contain SKU codes', () => {
-    it('It should fail as one lineitem object does not contain an SKU code', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        quantity: 10,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 100.00
-            })
-            .end((err, res) => {
-                res.should.have.status(600)
-                done()
-            })
-    })
-})
-
-//total tests
-describe('Tests that total exists', () => {
-    it('It should fail as total is absent', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                merchantID: "123456789A",
-            })
-            .end((err, res) => {
-                res.should.have.status(950)
-                done()
-            })
-    })
-})
-
-//total tests
-describe('Tests that total exists', () => {
-    it('It should fail as total is absent', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                merchantID: "123456789A",
-                total: "15.00"
-            })
-            .end((err, res) => {
-                res.should.have.status(950)
-                done()
-            })
-    })
-})
-
-//total tests
-describe('Tests that total exists', () => {
-    it('It should fail as total is absent', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    }
-                ],
-                merchantID: "123456789A",
-                total: -1.00
-            })
-            .end((err, res) => {
-                res.should.have.status(950)
                 done()
             })
     })
@@ -713,22 +313,14 @@ describe('Tests that userID exists', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
-                merchantID: "123456789A",
-                total: 100.00
+                },
+                merchantID: "123456789A"
             })
             .end((err, res) => {
                 res.should.have.status(950)
@@ -742,23 +334,15 @@ describe('Tests that userID is the minimum length (10)', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: "123456789",
-                merchantID: "123456789A",
-                total: 100.00
+                merchantID: "123456789A"
             })
             .end((err, res) => {
                 res.should.have.status(600)
@@ -772,23 +356,15 @@ describe('Tests that userID does not exceed the maximum length (10)', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: "123456789AB",
                 merchantID: "123456789A",
-                total: 100.00
             })
             .end((err, res) => {
                 res.should.have.status(600)
@@ -802,23 +378,15 @@ describe('Tests that userID is a string', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: 123456789,
                 merchantID: "123456789A",
-                total: 100.00
             })
             .end((err, res) => {
                 res.should.have.status(600)
@@ -833,22 +401,14 @@ describe('Tests that merchantID exists in request', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
-                userID: "123456789A",
-                total: 100.00
+                },
+                userID: "123456789A"
             })
             .end((err, res) => {
                 res.should.have.status(950)
@@ -863,23 +423,15 @@ describe('Tests that merchantID is the minimum length (10)', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: "123456789A",
-                merchantID: "123456789",
-                total: 100.00
+                merchantID: "123456789"
             })
             .end((err, res) => {
                 res.should.have.status(600)
@@ -893,23 +445,15 @@ describe('Tests that merchantID does not exceed the maximum length (10)', () => 
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: "123456789A",
-                merchantID: "123456789AB",
-                total: 100.00
+                merchantID: "123456789AB"
             })
             .end((err, res) => {
                 res.should.have.status(600)
@@ -923,23 +467,15 @@ describe('Tests that merchantID is a string', () => {
         chai.request(server)
             .post('/create-event')
             .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+                type: "product-view",
+                data: {
+                    location: "google.com",
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: "123456789A",
-                merchantID: 123456789,
-                total: 100.00
+                merchantID: 123456789
             })
             .end((err, res) => {
                 res.should.have.status(600)
@@ -947,6 +483,669 @@ describe('Tests that merchantID is a string', () => {
             })
     })
 })
+
+//data tests
+describe('Tests that data exists in transaction request', () => {
+    it('It should fail as data is absent from from transaction request', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(950)
+                done()
+            })
+    })
+})
+
+describe('Tests that data exists in product-view request', () => {
+    it('It should fail as data is absent from product-view request', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "product-view",
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(950)
+                done()
+            })
+    })
+})
+
+describe('Tests that data is not an empty object in transaction event', () => {
+    it('It should fail as data is an empty object in transaction event', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                userID: "123456789A",
+                merchantID: "123456789A",
+                data: {}
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that data is not an empty object in product-view event', () => {
+    it('It should fail as data is an empty object in product-view event', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "product-view",
+                userID: "123456789A",
+                merchantID: "123456789A",
+                data: {}
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+
+//lineItems tests. 
+describe('Tests that lineItems exists', () => {
+    it('It should fail as lineItems are absent from request', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                userID: "123456789A",
+                merchantID: "123456789A",
+                data: {
+                    total: 100.00
+                }
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+
+describe('Tests that lineItems contain objects', () => {
+    it('It should fail as lineItems contain primitive values', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        },
+                        3
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem objects all contain quantitys', () => {
+    it('It should fail as one lineItem object is missing a quantity value', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineitem objects do not contain negative quantities', () => {
+    it('It should fail as one lineitem object contains a negative value', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: -10,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineitem.quantities are numbers', () => {
+    it('It should fail as one lineitem obect is a string', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: -10,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: "1",
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem objects all contain price', () => {
+    it('It should fail as one lineItem object is missing a price value', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem.price is a number', () => {
+    it('It should fail as one lineItem.price is a string', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: "50.00",
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem.price is positive ', () => {
+    it('It should fail as one lineItem.price is negative', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: -500.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem objects all contain sub Totals', () => {
+    it('It should fail as one lineItem object is missing a sub total', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem objects sub totals are all numbers', () => {
+    it('It should fail as one lineItem object subtotal is a string', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: "50.00"
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItem objects sub totals are not negative', () => {
+    it('It should fail as one lineItem object subtotal is negative', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: -500.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineitem objects contain SKU codes', () => {
+    it('It should fail as one lineitem object does not contain an SKU code', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItems.skuCode is a string in all line item objects. ', () => {
+    it('It should fail as one lineitem.skuCode is a number', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            quantity: 1,
+                            skuCode: 123456789,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItems.skuCode is not less than the minimum length (6)', () => {
+    it('It should fail as one lineitem.skuCode is length 4', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            quantity: 1,
+                            skuCode: "1234",
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that lineItems.skuCode is not greater than the maximum length (20)', () => {
+    it('It should fail as one lineitem.skuCode is > 20', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            quantity: 1,
+                            skuCode: "123456789ABCDEFGHIJKLMNOP",
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+//total tests
+describe('Tests that total exists', () => {
+    it('It should fail as total is absent', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ]
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that total cannot be undefined', () => {
+    it('It should fail as total is undefined', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: undefined
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that total is a positive number', () => {
+    it('It should fail as total is negative', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: -20.00
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
+describe('Tests that total is a number', () => {
+    it('It should fail as total is a string', (done) => {
+        chai.request(server)
+            .post('/create-event')
+            .send({
+                type: "transaction",
+                data: {
+                    lineItems: [{
+                            skuCode: "887447521318",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: "20.00"
+                },
+                userID: "123456789A",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(600)
+                done()
+            })
+    })
+})
+
 
 //--events/:merchantID
 describe('Tests that a specified event is returned successfully', () => {
@@ -1006,5 +1205,4 @@ describe('Tests that get all events is working correctly', () => {
 })
 
 
-after(async () => {
-});
+after(async () => {});

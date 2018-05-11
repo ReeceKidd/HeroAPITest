@@ -92,6 +92,13 @@ eventsController.createEvent = (req, res) => {
             })
         }
 
+        if(req.body.data.total < 0){
+            return res.status(600).send({
+                error: 'Validation error',
+                message: "Total cannot be negative"
+            })
+        }
+
         var products = {},
             apiProductInformationPromises = [];
 
@@ -102,13 +109,7 @@ eventsController.createEvent = (req, res) => {
         */
         for (var x = 0; x < req.body.data.lineItems.length; x++) {
 
-            if (req.body.data.lineItems[x].quantity === undefined) {
-                return res.status(600).send({
-                    error: 'Type error',
-                    message: "lineItems object must contain quantity"
-                })
-            }
-
+            
             if (typeof req.body.data.lineItems[x].quantity !== "number") {
                 return res.status(600).send({
                     error: 'Type error',
@@ -129,8 +130,8 @@ eventsController.createEvent = (req, res) => {
             */
             if (req.body.data.lineItems[x].price === undefined) {
                 return res.status(600).send({
-                    error: 'Type error',
-                    message: "lineItems object must contain product price"
+                    error: 'Undefined error',
+                    message: "lineItems.price cannot be undefined."
                 })
             }
 
@@ -141,7 +142,7 @@ eventsController.createEvent = (req, res) => {
                 })
             }
 
-            if (typeof req.body.data.lineItems[x].price < 0) {
+            if (req.body.data.lineItems[x].price < 0) {
                 return res.status(600).send({
                     error: 'Type error',
                     message: "lineItems.price cannot be less than 0."
@@ -159,7 +160,7 @@ eventsController.createEvent = (req, res) => {
                 })
             }
 
-            if (typeof req.body.data.lineItems[x].subTotal < 0) {
+            if (req.body.data.lineItems[x].subTotal < 0) {
                 return res.status(600).send({
                     error: 'Type error',
                     message: "lineItems.subTotal cannot be less than 0."
@@ -168,10 +169,18 @@ eventsController.createEvent = (req, res) => {
 
             if (req.body.data.lineItems[x].skuCode === undefined) {
                 return res.status(600).send({
-                    error: 'Type error',
+                    error: 'Undefined error',
                     message: "lineItems.skuCode cannot be undefined"
                 })
             }
+
+            if (typeof req.body.data.lineItems[x].skuCode !== "string") {
+                return res.status(600).send({
+                    error: 'Validation error',
+                    message: "lineItems.skuCode must be a string"
+                })
+            }
+
 
             if (req.body.data.lineItems[x].skuCode.length < 6) {
                 return res.status(600).send({
@@ -192,7 +201,6 @@ eventsController.createEvent = (req, res) => {
             of the lineItems products. 
             */
             let apiURL = heroDevAPI + req.body.data.lineItems[x].skuCode
-            console.log(apiURL)
             apiProductInformationPromises.push(axios.get(apiURL).then((response) => {
                 return response
             }).catch((err) => {
@@ -205,7 +213,6 @@ eventsController.createEvent = (req, res) => {
 
         axios.all(apiProductInformationPromises).then(function (responses) {
             let updatedLineItems = {}
-            console.log('Number of responses ' + responses.length)
             for (var x = 0; x < responses.length; x++) {
 
                 for (var y = 0; y < req.body.data.lineItems.length; y++) {
@@ -252,24 +259,17 @@ eventsController.createEvent = (req, res) => {
         })
     } else if (req.body.type === "product-view") {
 
-        if (req.body.data.product === undefined) {
+        if(req.body.data.product === undefined){
             return res.status(600).send({
-                error: 'Type error',
-                message: "data.product must be defined"
-            })
+                error: 'Undefined error',
+                message: "data.product cannot be undefined"
+            }) 
         }
-
+        
         if (req.body.data.product === {}) {
             return res.status(600).send({
                 error: 'Validation error',
                 message: "data.product cannot be empty"
-            })
-        }
-
-        if (req.body.data.product.skuCode === undefined) {
-            return res.status(600).send({
-                error: 'Validation error',
-                message: "data.product.skuCode cannot be empty"
             })
         }
 
@@ -291,13 +291,6 @@ eventsController.createEvent = (req, res) => {
             return res.status(600).send({
                 error: 'Validation error',
                 message: "data.product.skuCode cannot be greater than 20 characters"
-            })
-        }
-
-        if (req.body.data.location === undefined) {
-            return res.status(600).send({
-                error: 'Type error',
-                message: "data.location cannot be undefined."
             })
         }
 
@@ -326,8 +319,6 @@ eventsController.createEvent = (req, res) => {
                 }
             }
         })
-
-        console.log(productViewEvent)
         const saveProductViewEvent = new ProductEvent(productViewEvent)
         saveProductViewEvent.save(function (err) {
             if (err) {
@@ -352,7 +343,6 @@ eventsController.createEvent = (req, res) => {
 
 
 }
-
 
 eventsController.summaryOfEvents = (req, res) => {
 
@@ -391,39 +381,40 @@ eventsController.summaryOfEvents = (req, res) => {
             var numberOfTransactionEvents = 0
             var numberOfProductViewEvents = 0
             var uniqueUsers = new Set([]);
-            var productViewUniqueUsers = new Set([])
-            var transactionUniqueUsers = new Set([])
-
+            var productViewUsers = new Set([])
+            var transactionUsers = new Set([])
+            var overallTotal = 0
             for (var x = 0; x < events.length; x++) {
                 if (!uniqueUsers.has(events[x].userID)) {
                     uniqueUsers.add(events[x].userID)
                 }
                 if (events[x].type === "transaction") {
                     numberOfTransactionEvents++
-                    if (!transactionUniqueUsers.has(events[x].userID)) {
-                        transactionUniqueUsers.add(events[x].userID)
+                    if (!transactionUsers.has(events[x].userID)) {
+                        transactionUsers.add(events[x].userID)
                     }
+                    overallTotal += events[x].data.total
                 } else if (events[x].type === "product-view") {
                     numberOfProductViewEvents++
-                    if (!productViewUniqueUsers.has(events[x].userID)) {
-                        productViewUniqueUsers.add(events[x].userID)
+                    if (!productViewUsers.has(events[x].userID)) {
+                        productViewUsers.add(events[x].userID)
                     }
                 }
             }
 
             res.status(200).send({
                 "total-events": numberOfTransactionEvents + numberOfProductViewEvents,
-                "number-of-customers": totalUniqueUsers.size,
+                "number-of-customers": uniqueUsers.size,
                 "events-summary": [{
                         "type": "product-vew",
                         "total-events": numberOfProductViewEvents,
-                        "number-of-customers": productViewUniqueUsers.size()
+                        "number-of-customers": productViewUsers.size
                     },
                     {
                         "type": "transaction",
                         "total-events": numberOfTransactionEvents,
-                        "number-of-customers": transactionUniqueUsers.size(),
-                        "total-value": events[x].total
+                        "number-of-customers": transactionUsers.size,
+                        "total-value": overallTotal
                     }
                 ]
             })
