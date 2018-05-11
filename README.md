@@ -39,8 +39,7 @@ routes.post('/register-merchant', merchantController.registerMerchant)<br>
 Additional merchant routes that could be added, would be the ability to delete merchants or disassociate products. 
 <br>
 
-<b>Products Routes</b>
-//Products Routes
+<b>Products Routes</b><br>
 routes.get('/products', productsController.getAllProducts)<br>
 routes.get('/products/:skuCode', productsController.getSpecificProduct)</br>
 routes.post('/register-product', productsController.registerProduct)<br>
