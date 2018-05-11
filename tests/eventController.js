@@ -138,7 +138,7 @@ describe('Creates denim-jacket product', () => {
         chai.request(server)
             .post('/register-product')
             .send({
-                skuCode: "1234567AC",
+                skuCode: "1M34567AC",
                 name: "denim-jacket",
                 price: 50.00
             })
@@ -154,7 +154,7 @@ describe('Creates tie product', () => {
         chai.request(server)
             .post('/register-product')
             .send({
-                skuCode: "12345NHAB",
+                skuCode: "17345NHAB",
                 name: "blue-tie",
                 price: 5.00
             })
@@ -173,7 +173,7 @@ describe('Creates valid merchant', () => {
                 name: "Prada",
                 email: "prada@gmail.com",
                 postcode: "BT319ZY",
-                merchantID: "123456789A"
+                merchantID: "123456785S"
             })
             .end((err, res) => {
                 res.should.have.status(200)

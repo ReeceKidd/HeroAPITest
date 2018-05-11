@@ -59,25 +59,7 @@ chai.use(chaiHttp);
 //Empty the test database before starting
 Merchant.remove({}, function (err) {})
 
-//Creates merchant needed for tests. 
-before(() => {
-    //Register merchant test
-    describe('Tests that name exists', () => {
-        it('It should fail as name is absent from request', (done) => {
-            chai.request(server)
-                .post('/register-merchant')
-                .send({
-                    email: "merchant953@gmail.com",
-                    postcode: "BT319Y4",
-                    merchantID: "123456789A"
-                })
-                .end((err, res) => {
-                    res.should.have.status(950)
-                    done()
-                })
-        })
-    })
-});
+
 
 //Creates valid merchant 
 describe('Tests for valid merchant registration', () => {
@@ -86,7 +68,7 @@ describe('Tests for valid merchant registration', () => {
             .post('/register-merchant')
             .send({
                 name: "Prada",
-                email: "prada@gmail.com",
+                email: "prada2@gmail.com",
                 postcode: "BT319ZY",
                 merchantID: "123456789A"
             })
@@ -98,6 +80,21 @@ describe('Tests for valid merchant registration', () => {
 })
 
 
+describe('Tests that name exists', () => {
+    it('It should fail as name is absent from request', (done) => {
+        chai.request(server)
+            .post('/register-merchant')
+            .send({
+                email: "merchant953@gmail.com",
+                postcode: "BT319Y4",
+                merchantID: "123456789A"
+            })
+            .end((err, res) => {
+                res.should.have.status(950)
+                done()
+            })
+    })
+})
 
 
 describe('Tests that name is at least two characters long', () => {
@@ -395,5 +392,5 @@ describe('Tests minimum length of merchantID (10)', () => {
 })
 
 after(async () => {
-    
+
 });

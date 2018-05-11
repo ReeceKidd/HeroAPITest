@@ -9,7 +9,11 @@ application will launch successfully. If it's easier I can provide an Ngrok URL 
 
 # Tests
 
-To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>. Their are 100+ API tests, I can take the validation further if its required. 
+To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>.<br>
+
+To run all the tests go to the home directory and run: <b> mocha .\tests\ --timeout=0 </b>
+
+Their are 111 API tests, I can take the validation further if its required. 
 
 # CustomersTest 
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
