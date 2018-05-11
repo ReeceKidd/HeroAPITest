@@ -15,7 +15,6 @@ To run all the tests go to the home directory and run: <b> mocha .\tests\ --time
 
 Their are 111 API tests, I can take the validation further if its required. 
 
-# CustomersTest 
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
 
 # Interpretation 
