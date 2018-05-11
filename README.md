@@ -15,7 +15,7 @@ To test the project go to the "tests" sub folder and run the following command o
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
 
 # Interpretation 
-My interpretation of the problem was to create an API that allows users to get products and retreive products from both a MongoDB database and the heroAPI. It allows for merchants to get a summary of their own events, and offers the ability to return all events that have occured.  <br>
+My interpretation of the problem was to create an API that allows users to get products and retreive products from both a MongoDB database and the heroAPI. It allows merchants to get a summary of their own events, and it offers them the ability to return all events that have occured.  <br>
 
 # Available API routes. 
 <b>Events Routes</b><br>
