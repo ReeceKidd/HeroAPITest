@@ -117,10 +117,10 @@ productsController.getSpecificProduct = (req, res) => {
 
     var query = {
         'skuCode': skuCode
-    } 
+    }
     apiURL = heroDevAPI + skuCode
 
-    
+
     //Checks the local database and then the API for the product. 
     Product.find(query, function (err, product) {
         if (err) {
@@ -130,20 +130,15 @@ productsController.getSpecificProduct = (req, res) => {
             })
         } else if (product.length === 0) {
             axios.get(apiURL, config).then(function (response) {
-                console.log(response.data)
-                if(response.data === null){
-                    res.status(404).send({
-                        message: 'Could not load product with skuCode'
-                    })
-                } else {
-                    return res.status(200).send({
-                        product: response.data
-                    })
-                }
-                
+
+                return res.status(200).send({
+                    product: response.data
+                })
+
             }).catch(err => {
-                res.status(500).send({
-                    message: 'Could not retreive data'
+                //Error from axios promise means that product was not found. 
+                res.status(404).send({
+                    message: 'Could not retreive product with sku-code: ' + skuCode
                 })
             })
         } else {
