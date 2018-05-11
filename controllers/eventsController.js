@@ -44,6 +44,33 @@ eventsController.createEvent = (req, res) => {
         })
     }
 
+    if (typeof req.body.merchantID !== "string") {
+        return res.status(600).send({
+            error: 'Type error',
+            message: "Merchant must be a string"
+        })
+    }
+
+    if (typeof req.body.userID !== "string") {
+        return res.status(600).send({
+            error: 'Type error',
+            message: "User must be a string"
+        })
+    }
+
+     /*
+    Further validation would be to check if the user and merchant
+    existed in the database similarily to how the skuCOde was used to 
+    check for valid products. 
+    */
+    var eventValidationError = eventValidation(req)
+    if (eventValidationError) {
+        return res.status(600).json({
+            message: eventValidationError,
+            error: 'Validation failure'
+        })
+    }
+
     /*
     Transaction events.
     The transaction events currently supported are transaction and product view. 
@@ -239,10 +266,45 @@ eventsController.createEvent = (req, res) => {
             })
         }
 
+        if (req.body.data.product.skuCode === undefined) {
+            return res.status(600).send({
+                error: 'Validation error',
+                message: "data.product.skuCode cannot be empty"
+            })
+        }
+
+        if (typeof req.body.data.product.skuCode !== "string") {
+            return res.status(600).send({
+                error: 'Validation error',
+                message: "data.product.skuCode must be a string"
+            })
+        }
+
+        if (req.body.data.product.skuCode.length < 6) {
+            return res.status(600).send({
+                error: 'Validation error',
+                message: "data.product.skuCode must be at least six characters"
+            })
+        }
+
+        if (req.body.data.product.skuCode.length > 20) {
+            return res.status(600).send({
+                error: 'Validation error',
+                message: "data.product.skuCode cannot be greater than 20 characters"
+            })
+        }
+
         if (req.body.data.location === undefined) {
             return res.status(600).send({
                 error: 'Type error',
                 message: "data.location cannot be undefined."
+            })
+        }
+
+        if (typeof req.body.data.location !== "string") {
+            return res.status(600).send({
+                error: 'Type error',
+                message: "data.location must be a string."
             })
         }
 
@@ -252,37 +314,39 @@ eventsController.createEvent = (req, res) => {
                 message: "data.location cannot be undefined."
             })
         }
+
+        const productViewEvent = new ProductEvent({
+            "type": req.body.type,
+            "userID": req.body.userID,
+            "merchantID": req.body.merchantID,
+            "data": {
+                "location": req.body.data.location,
+                "product": {
+                    "skuCode": req.body.data.product.skuCode
+                }
+            }
+        })
+
+        console.log(productViewEvent)
+        const saveProductViewEvent = new ProductEvent(productViewEvent)
+        saveProductViewEvent.save(function (err) {
+            if (err) {
+                return res.status(500).json({
+                    message: err,
+                    error: 'Server faillure'
+                })
+            } else {
+                return res.status(200).send({
+                    message: 'Successfully created product-view event',
+                    "event": saveProductViewEvent
+                })
+            }
+        });
+
     } else {
         return res.status(600).send({
             error: 'Unsupported event',
             message: "Unsupported event: " + req.body.type + ' event must either be transaction or product-view'
-        })
-    }
-
-    if (typeof req.body.merchantID !== "string") {
-        return res.status(600).send({
-            error: 'Type error',
-            message: "Merchant must be a string"
-        })
-    }
-
-    if (typeof req.body.userID !== "string") {
-        return res.status(600).send({
-            error: 'Type error',
-            message: "User must be a string"
-        })
-    }
-
-    /*
-    Further validation would be to check if the user and merchant
-    existed in the database similarily to how the skuCOde was used to 
-    check for valid products. 
-    */
-    var eventValidationError = eventValidation(req)
-    if (eventValidationError) {
-        return res.status(600).json({
-            message: eventValidationError,
-            error: 'Validation failure'
         })
     }
 
