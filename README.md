@@ -9,18 +9,13 @@ application will launch successfully. If it's easier I can provide an Ngrok URL 
 
 # Tests
 
-To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>. Their are 90 something API tests, I can take the validation further if its required. 
+To test the project go to the "tests" sub folder and run the following command on each of the files: <b>"mocha [fileName] --timeout=0"</b>. Their are 100+ API tests, I can take the validation further if its required. 
 
 # CustomersTest 
 This solution uses a MongoDB database, node and express to offer various API routes related to a retail store.  
 
 # Interpretation 
-My interpretation of the problem was to create an API that allows users to get products and for users and merchants
-to register and return information. <br>
-
-I'm aware that the instructions said to use the existing API but I didn't get any information returned using the /products
-call. I also didn't have the port information. If I have misinterpreted I'd be more than happy to give it another go. If this 
-isn't what you were looking for thank you for the opportunity anyway. I'm more than happy to take on all feedback. #Update. I hadn't used curl before, so I made the stupid mistake of not realising it was a header parameter. I have added two new API routes that retrieve the product details. I can adapt the current code to better match the requirements if needed. 
+My interpretation of the problem was to create an API that allows users to get products and retreive products from both a MongoDB database and the heroAPI. It allows for merchants to get a summary of their own events, and offers the ability to return all events that have occured.  <br>
 
 # Available API routes. 
 <b>Events Routes</b><br>
@@ -43,9 +38,7 @@ Additional merchant routes that could be added, would be the ability to delete m
 <b>Products Routes</b>
 //Products Routes
 routes.get('/products', productsController.getAllProducts)<br>
-routes.get('/api/products', productsController.getAllProductsAPI)<br>
-routes.get('/products/:skuCode', productsController.getSpecificProduct)<br>
-routes.get('/api/products/:skuCode', productsController.getProductAPI)<br>
+routes.get('/products/:skuCode', productsController.getSpecificProduct)</br>
 routes.post('/register-product', productsController.registerProduct)<br>
 
 Additional product routes could be to find the merchants details associated with project. 
