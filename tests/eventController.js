@@ -14,23 +14,6 @@ Tests that transaction type is supported
 Tests that product-view type is supported. 
 Tests that only transaction and product-view events are supported. 
 
-lineItems (Array):
-Tests that line items exists in request. 
-Tests that line items contains objects. 
-Tests that quantity exists in all line item objects. 
-Tests that quantity is not negative in line item objects
-Tests that price exists in all line item objects. 
-Tests that price is not negative in all line item objects. 
-Tests that subTotal exists in all line item objects. 
-Tests that subTotal is not negative in all line item objects. 
-Test that sku code exists in all line item objects. 
-Test that valid sku code is used. 
-
-total: 
-Tests that total exists
-Tests that total is a >= 0.00
-Tests that total is a number. 
-
 userID: 
 Tests that userID exists
 Tests that userID is the minimum length (10)
@@ -43,6 +26,61 @@ Tests that merchantID is the minimum length (10)
 Tests that merchantID does not exceed the maximum length (10)
 Tests that merchantID is a string
 
+data: 
+Tests that data exists in request
+Tests that data is not an empty object
+
+// transaction Event Tests
+
+total: 
+Tests that total exists
+Tests that total is a >= 0.00
+Tests that total is a number.
+
+lineItems (Array):
+Tests that lineItems exists in request. 
+Tests that lineItems contains objects. 
+
+Tests that lineItems.quantity exists in all line item objects.
+Tests that lineItems.quantity is a number in all line item objects. 
+Tests that lineItems.quantity is not negative in line item objects
+
+Tests that lineItems.price exists in all line item objects.
+Tests that lineItems.price is a number in all line item objects.  
+Tests that lineItems.price is not negative in all line item objects.
+
+Tests that lineItems.subTotal exists in all line item objects.
+Tests that lineItems.subTotal is a number in all line item objects.  
+Tests that linteItems.subTotal is not negative in all line item objects.
+
+Test that lineItems.skuCode exists in all line item objects.
+Tests that lineItems.skuCode is a string in all line item objects. 
+Tests that lineItems.skuCode is not less than the minimum length (6)
+Tests that lineItems.skuCode is not greater than (20)
+
+//transaction event tests end 
+
+// product-view event Test
+
+product: 
+Tests that product exists
+Tests that product is an object
+Tests that product is not an empty object
+
+product.skuCode:
+Thats that product.skuCode exists
+Tests that product.skuCode is a string
+Tests that product.skuCode is the minimum length (6)
+Tests that product.skuCode does not exceed the maximum length (20)
+
+location: 
+Tests that location exists
+Tests that location is a string. 
+Tests that location is the minimum length (6)
+
+
+// End of product-view event test
+
 --events/:merchantID
 Test that specified event is returned. 
 Test that random merchantID returns nothing
@@ -50,7 +88,7 @@ Tests that merchantID does not exceed a maximum length. (10)
 Tests that merchantID does not exceed a minimum length. (10)
 
 --events/
-Tests that events is returning data correctly. 
+Tests that events are being returned. 
 
 */
 
@@ -128,8 +166,8 @@ before(() => {
         })
     })
     //Creates merchantID for test. 
-    describe('Creates valid merchantID', () => {
-        it('merchantID should be registered as request is valid', (done) => {
+    describe('Creates valid merchant', () => {
+        it('merchant should be registered as request is valid', (done) => {
             chai.request(server)
                 .post('/register-merchant')
                 .send({
@@ -145,8 +183,8 @@ before(() => {
         })
     })
     //Creates userID for test. 
-    describe('Creates userID for test', () => {
-        it('userID should register as request is valid', (done) => {
+    describe('Creates valid user', () => {
+        it('user should register as request is valid', (done) => {
             chai.request(server)
                 .post('/register-user')
                 .send({
@@ -162,39 +200,60 @@ before(() => {
                 })
         })
     })
-});
-
-describe('Tests for valid event creation', () => {
-    it('Event should be created as request is valid', (done) => {
-        chai.request(server)
-            .post('/create-event')
-            .send({
-                type: "transaction",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
+    //Creates transaction event for test
+    describe('Tests for valid transaction event creation', () => {
+        it('transaction Event should be created as request is valid', (done) => {
+            chai.request(server)
+                .post('/create-event')
+                .send({
+                    type: "transaction",
+                    data: {
+                        lineItems: [{
+                            skuCode: "1234567AB",
+                            quantity: 1,
+                            price: 50.00,
+                            subTotal: 50.00
+                        },
+                        {
+                            skuCode: "12345NHAB",
+                            quantity: 1,
+                            price: 5.00,
+                            subTotal: 5.00
+                        }
+                    ],
+                    total: 55.00
                     },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 5.00,
-                        subTotal: 5.00
-                    }
-                ],
-                userID: "123456789A",
-                merchantID: "123456789A",
-                total: 55.00
-            })
-            .end((err, res) => {
-                res.should.have.status(200)
-                done()
-            })
+                    userID: "123456789A",
+                    merchantID: "123456789A"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200)
+                    done()
+                })
+        })
     })
-})
-
-//Event creation tests. 
+    //Creates product-view event for test. 
+    describe('Tests for valid product-view event creation', () => {
+        it('product-view Event should be created as request is valid', (done) => {
+            chai.request(server)
+                .post('/create-event')
+                .send({
+                    type: "product-view",
+                    data: {
+                        product: {
+                            skuCode: "AAAA5NHAB"
+                        }
+                    },
+                    userID: "123456789A",
+                    merchantID: "123456789A"
+                })
+                .end((err, res) => {
+                    res.should.have.status(200)
+                    done()
+                })
+        })
+    })
+});
 
 //type parameter checks. 
 describe('Tests that type exists', () => {
@@ -256,28 +315,19 @@ describe('Tests that transaction type is supported', () => {
     })
 })
 
-describe('Tests that transaction type is supported', () => {
-    it('It should pass as type is equal to transaction', (done) => {
+describe('Tests that product-view type is supported. ', () => {
+    it('It should pass as type is equal to product-view', (done) => {
         chai.request(server)
             .post('/create-event')
             .send({
                 type: "product-view",
-                lineItems: [{
-                        skuCode: "1234567AB",
-                        quantity: 1,
-                        price: 50.00,
-                        subTotal: 50.00
-                    },
-                    {
-                        skuCode: "12345NHAB",
-                        quantity: 1,
-                        price: 5.00,
-                        subTotal: 5.00
+                data: {
+                    product: {
+                        skuCode: "AAAA5NHAB"
                     }
-                ],
+                },
                 userID: "123456789A",
-                merchantID: "123456789A",
-                total: 55.00
+                merchantID: "123456789A"
             })
             .end((err, res) => {
                 res.should.have.status(200)

@@ -8,10 +8,11 @@ designated by MongoDB. However, the merhantID's where used instead.
 
 const ProductEvent = new Schema({
     type: String,
-    lineItems: [],
-    total: Number,
+    data: Object,
+    time: String,
     merchantID: String,
-    userID: String
+    userID: String,
+    location: String
 },  {
     timestamps: true
 }, {

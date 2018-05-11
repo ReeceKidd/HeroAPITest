@@ -117,7 +117,11 @@ productsController.getSpecificProduct = (req, res) => {
 
     var query = {
         'skuCode': skuCode
-    }
+    } 
+    apiURL = heroDevAPI + skuCode
+
+    
+    //Checks the local database and then the API for the product. 
     Product.find(query, function (err, product) {
         if (err) {
             return res.status(500).send({
@@ -125,53 +129,33 @@ productsController.getSpecificProduct = (req, res) => {
                 error: 'Server error'
             })
         } else if (product.length === 0) {
-            return res.status(404).send({
-                message: 'Could not find a product with that skuCode.',
-                error: 'Unknown product error'
+            axios.get(apiURL, config).then(function (response) {
+                console.log(response.data)
+                if(response.data === null){
+                    res.status(404).send({
+                        message: 'Could not load product with skuCode'
+                    })
+                } else {
+                    return res.status(200).send({
+                        product: response.data
+                    })
+                }
+                
+            }).catch(err => {
+                res.status(500).send({
+                    message: 'Could not retreive data'
+                })
             })
         } else {
             return res.status(200).send({
-                product
+                product: product
             })
         }
     })
 }
 
 /*
-Retreives a specific product.
-*/
-productsController.getProductAPI = (req, res) => {
-
-    const skuCode = req.params.skuCode
-
-    if (typeof skuCode !== "string" && typeof merchantID !== "string") {
-        return res.status(600).send({
-            error: 'Type failure',
-            message: 'skuCode must be a string'
-        })
-    }
-
-    //skuCode lengths can be adjusted to suit requirements. 
-    if (skuCode.length < 6) {
-        return res.status(600).send({
-            error: 'Validation failure',
-            message: 'skuCode cannot be less than 6 characters'
-        })
-    }
-
-    apiURL = heroDevAPI + skuCode
-
-    axios.get(apiURL, config).then(function (response) {
-        res.status(200).send(response.data)
-    }).catch(err => {
-        res.status(500).send({
-            message: 'Could not retreive data'
-        })
-    })
-}
-
-/*
-Returns a list of all products. 
+Returns a list of all products from local database and API. 
 */
 productsController.getAllProducts = (req, res) => {
     var query = Product.find({}).select('-__v')
@@ -181,28 +165,18 @@ productsController.getAllProducts = (req, res) => {
             res.status(500).send(err)
             return
         }
-        res.send({
-            products
-        });
-    })
-}
-
-/*
-Returns a list of all products. 
-Not too sure if this is correct as it is returning an empty Array
-*/
-productsController.getAllProductsAPI = (req, res) => {
-
-    axios.get(heroDevAPI).then(function (response) {
-        if (response.data === []) {
-            res.status(200).send("No products found for merchant: " + merchantID)
-        } else {
-            res.status(200).send(response)
-        }
-    }).catch(err => {
-        res.status(500).send({
-            message: err
+        axios.get(heroDevAPI).then(function (response) {
+            res.status(200).send({
+                "number-of-products": products.length + response.data.length,
+                "database-products": products,
+                "api-products": response.data
+            })
+        }).catch(err => {
+            res.status(500).send({
+                message: err
+            })
         })
+
     })
 }
 

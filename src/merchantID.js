@@ -5,7 +5,7 @@ var argv = require('yargs')
     .options({
         'M': {
             alias: 'merchantID',
-            default: 'iWU4p9dJ9m',
+            default: '887447521318',
             describe: 'Valid merchantID is required for API',
             type: 'string',
             length: 10
